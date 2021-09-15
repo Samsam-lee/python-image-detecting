@@ -32,16 +32,31 @@ vertices = numpy.array([[(-(width/4),height), ((width/2)-(width/10),(height/8)),
 # 관심 영역 지정 색으로 표현
 cv2.fillPoly(mask, vertices, ignore_mask_color)
 
-plt.figure(figsize=(10,8))
-plt.imshow(mask,cmap='gray')
-plt.show()
+# plt.figure(figsize=(10,8))
+# plt.imshow(mask,cmap='gray')
+# plt.show()
 
 masked_image = cv2.bitwise_and(edgeImage, mask)
 
 cv2.imshow('masked_image', masked_image)
 
+# Hough Line
+rho = 2
+theta = numpy.pi/180
+threshold = 90
+min_line_len = 120
+max_line_gap = 150
 
+lines = cv2.HoughLinesP(masked_image, rho, theta, threshold, numpy.array([]), 
+                        minLineLength = min_line_len, maxLineGap = max_line_gap)
 
+line_image = numpy.zeros((height, width, 3), dtype = numpy.uint8)
+
+for line in lines:
+    for x1, y1, x2, y2 in line:
+        cv2.line(line_image, (x1, y1), (x2, y2), [255, 255, 0], 1)
+
+cv2.imshow('line_image', line_image)
 
 # 이미지 사용자에게 보여주기
 # cv2.imshow("Result Image", edgeImage)
