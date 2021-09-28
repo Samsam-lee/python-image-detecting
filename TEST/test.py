@@ -70,33 +70,33 @@ while(video.isOpened()):
                                 minLineLength = min_line_len, maxLineGap = max_line_gap)
 
 
-        # 대표선
-        leftFit = []
-        rightFit = []
+        # # 대표선
+        # leftFit = []
+        # rightFit = []
 
-        for line in lines:
-            x1, y1, x2, y2 = line.reshape(4)
-            parameters = numpy.polyfit((x1, x2), (y1, y2), 1)
-            slope = parameters[0]
-            intercept = parameters[1]
-            if slope < 0:
-                leftFit.append((slope, intercept))
-            else:
-                rightFit.append((slope, intercept))
+        # for line in lines:
+        #     x1, y1, x2, y2 = line.reshape(4)
+        #     parameters = numpy.polyfit((x1, x2), (y1, y2), 1)
+        #     slope = parameters[0]
+        #     intercept = parameters[1]
+        #     if slope < 0:
+        #         leftFit.append((slope, intercept))
+        #     else:
+        #         rightFit.append((slope, intercept))
         
-        leftFitAverage = numpy.average(leftFit, axis=0)
-        rightFitAverage = numpy.average(rightFit, axis=0)
-        leftLine = makeCoordinates(image, leftFitAverage)
-        rightLine = makeCoordinates(image, rightFitAverage)
+        # leftFitAverage = numpy.average(leftFit, axis=0)
+        # rightFitAverage = numpy.average(rightFit, axis=0)
+        # leftLine = makeCoordinates(image, leftFitAverage)
+        # rightLine = makeCoordinates(image, rightFitAverage)
 
-        averageLine = numpy.array([leftLine, rightLine])
+        # averageLine = numpy.array([leftLine, rightLine])
 
         #########################################################대표선 오류############
 
-        # line_image = numpy.zeros((height, width, 3), dtype = numpy.uint8)
-        line_image = numpy.zeros_like(image)
-        if averageLine is not None:
-            for line in averageLine:
+        line_image = numpy.zeros((height, width, 3), dtype = numpy.uint8)
+        # line_image = numpy.zeros_like(image)
+        if lines is not None:
+            for line in lines:
                 for x1, y1, x2, y2 in line:
                     cv2.line(line_image, (x1, y1), (x2, y2), [0, 0, 255], 5)
 
