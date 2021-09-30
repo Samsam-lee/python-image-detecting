@@ -1,21 +1,30 @@
 # -*- coding: utf-8 -*-
 
 import cv2
-import matplotlib.pyplot as plt
 import numpy
 
 # 이미지 불러오기
 # image = cv2.imread('assets/TestTrack1.png')
 # image = cv2.imread('assets/testImage1.jpeg')
 
-def makeCoordinates(image, line_parameters):
-    slope, intercept = line_parameters
-    y1 = image.shape[0]
-    y2 = int(y1 * (3/5))    
-    x1 = int((y1 - intercept) / slope)
-    x2 = int((y2 - intercept) / slope)
 
-    return numpy.array([x1, y1, x2, y2])
+def getFitLine(img, f_lines):
+    lines = numpy.squeeze(f_lines)
+    lines = lines.reshape(lines.shape[0] * 2, 2)
+
+    rows, cols = img.shape[:2]
+    output = cv2.fitLine(lines, cv2.DIST_L2, 0, 0.01, 0.01)
+    vx, vy, x, y = output[0], output[1], output[2], output[3]
+
+    leftY = int((-x * vy / vx) + y)
+    rightY = int(((cols - x) * vy / vx) + y)
+
+    x1, y1 = cols - 1, rightY
+    x2, y2 = 0, leftY
+
+    result = [x1, y1, x2, y2]
+
+    return result
 
 # 영상 불러오기
 video = cv2.VideoCapture('assets/testVideoCurve1.mp4')
@@ -53,10 +62,6 @@ while(video.isOpened()):
         # 관심 영역 지정 색으로 표현
         cv2.fillPoly(mask, vertices, ignore_mask_color)
 
-        # plt.figure(figsize=(10,8))
-        # plt.imshow(mask,cmap='gray')
-        # plt.show()
-
         masked_image = cv2.bitwise_and(edgeImage, mask)
 
         ### Hough Line ###
@@ -68,6 +73,23 @@ while(video.isOpened()):
 
         lines = cv2.HoughLinesP(masked_image, rho, theta, threshold, numpy.array([]), 
                                 minLineLength = min_line_len, maxLineGap = max_line_gap)
+
+        try:
+            tempLine = numpy.squeeze(lines)
+            slopeDegree = (numpy.arctan2(tempLine[:, 1] - tempLine[:, 3], tempLine[:, 0] - tempLine[:, 2]) * 180) / numpy.pi
+
+        # # lines = lines[numpy.abs(slopeDegree) < 160]
+        # # slopeDegree = slopeDegree[numpy.abs(slopeDegree) < 160]
+
+            leftLines, rightLines = tempLine[(slopeDegree > 0), :], tempLine[(slopeDegree < 0), :]
+            leftLines, rightLines = leftLines[:, None], rightLines[:, None]
+
+            leftFitLine = getFitLine(image, leftLines)
+            rightFitLine = getFitLine(image, rightLines)
+        except:
+            print("except")
+
+
 
 
         # # 대표선
@@ -91,14 +113,21 @@ while(video.isOpened()):
 
         # averageLine = numpy.array([leftLine, rightLine])
 
-        #########################################################대표선 오류############
 
         line_image = numpy.zeros((height, width, 3), dtype = numpy.uint8)
-        # line_image = numpy.zeros_like(image)
-        if lines is not None:
-            for line in lines:
-                for x1, y1, x2, y2 in line:
-                    cv2.line(line_image, (x1, y1), (x2, y2), [0, 0, 255], 5)
+
+        for line in lines:
+            for x1, y1, x2, y2 in line:
+                cv2.line(line_image, (x1, y1), (x2, y2), [0, 0, 255], 5)
+                
+        # # if lines is not None:
+        # for line in leftFitLine:
+        #     for x1, y1, x2, y2 in line:
+        #         cv2.line(line_image, (x1, y1), (x2, y2), [0, 0, 255], 5)
+        # # if lines is not None:
+        # for line in rightFitLine:
+        #     for x1, y1, x2, y2 in line:
+        #         cv2.line(line_image, (x1, y1), (x2, y2), [0, 0, 255], 5)
 
     except:
         continue
