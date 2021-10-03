@@ -10,7 +10,7 @@ layer_names = net.getLayerNames()
 output_layers = [layer_names[i[0] - 1] for i in net.getUnconnectedOutLayers()]
 colors = numpy.random.uniform(0, 255, size=(len(classes), 3))
 
-video = cv2.VideoCapture('assets/driveRoad2.mov')
+video = cv2.VideoCapture('assets/driveRoad.mov')
 
 while(video.isOpened()):
     ret, img = video.read()
@@ -90,6 +90,7 @@ while(video.isOpened()):
         continue
 
     cv2.imshow("Video", img)
+
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
