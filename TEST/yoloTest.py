@@ -10,77 +10,89 @@ layer_names = net.getLayerNames()
 output_layers = [layer_names[i[0] - 1] for i in net.getUnconnectedOutLayers()]
 colors = numpy.random.uniform(0, 255, size=(len(classes), 3))
 
-# 이미지 가져오기
-img = cv2.imread("personInRoad.jpg")
-# img = cv2.resize(img, None, fx=0.4, fy=0.4)
-# img = cv2.resize(img, dsize=(1024,768))
-height, width, channels = img.shape
+video = cv2.VideoCapture('assets/driveRoad2.mov')
 
-# Detecting objects
-blob = cv2.dnn.blobFromImage(img, 0.00392, (416, 416), (0, 0, 0), True, crop=False)
-net.setInput(blob)
-# outs -> 감지 결과
-outs = net.forward(output_layers)
+while(video.isOpened()):
+    ret, img = video.read()
 
-# print(outs)
+    try:
+        # 이미지 가져오기
+        # img = cv2.imread("assets/personInRoad.jpg")
+        # img = cv2.resize(img, None, fx=0.4, fy=0.4)
+        # img = cv2.resize(img, dsize=(1024,768))
+        height, width, channels = img.shape
 
-# 정보를 화면에 표시
-class_ids = []
-confidences = []
-boxes = []
+        # Detecting objects
+        blob = cv2.dnn.blobFromImage(img, 0.00392, (416, 416), (0, 0, 0), True, crop=False)
+        net.setInput(blob)
+        # outs -> 감지 결과
+        outs = net.forward(output_layers)
 
-# Object detected
-for out in outs:
-    # detection 배열의 index 5번부터 끝까지를 활용하여 confidence 확인
-    for detection in out:
-        scores = detection[5:]
-        class_id = numpy.argmax(scores)
-        confidence = scores[class_id]
-        
-        # 신뢰성 50% 이상일 때
-        if confidence > 0.5:
-            # for i in detection[:5]:
-            #     print(i)
-            # print('-------------------')
-            center_x = int(detection[0] * width)
-            center_y = int(detection[1] * height)
-            w = int(detection[2] * width)
-            h = int(detection[3] * height)
-            # 좌표
-            x = int(center_x - w / 2)
-            y = int(center_y - h / 2)
+        # print(outs)
 
-            boxes.append([x, y, w, h])
-            confidences.append(float(confidence))
-            class_ids.append(class_id)
+        # 정보를 화면에 표시
+        class_ids = []
+        confidences = []
+        boxes = []
+
+        # Object detected
+        for out in outs:
+            # detection 배열의 index 5번부터 끝까지를 활용하여 confidence 확인
+            for detection in out:
+                scores = detection[5:]
+                class_id = numpy.argmax(scores)
+                confidence = scores[class_id]
+                
+                # 신뢰성 50% 이상일 때
+                if confidence > 0.5:
+                    # for i in detection[:5]:
+                    #     print(i)
+                    # print('-------------------')
+                    center_x = int(detection[0] * width)
+                    center_y = int(detection[1] * height)
+                    w = int(detection[2] * width)
+                    h = int(detection[3] * height)
+                    # 좌표
+                    x = int(center_x - w / 2)
+                    y = int(center_y - h / 2)
+
+                    boxes.append([x, y, w, h])
+                    confidences.append(float(confidence))
+                    class_ids.append(class_id)
 
 
-indexes = cv2.dnn.NMSBoxes(boxes, confidences, 0.5, 0.4)
-# print(confidences)
+        indexes = cv2.dnn.NMSBoxes(boxes, confidences, 0.5, 0.4)
+        # print(confidences)
 
-# font = cv2.FONT_HERSHEY_SIMPLEX
-font = cv2.FONT_HERSHEY_PLAIN
-# font = cv2.FONT_HERSHEY_DUPLEX
-# font = cv2.FONT_HERSHEY_COMPLEX
-# font = cv2.FONT_HERSHEY_COMPLEX_SMALL
-# font = cv2.FONT_HERSHEY_SCRIPT_SIMPLEX
-# font = cv2.FONT_HERSHEY_SCRIPT_COMPLEX
-# font = cv2.FONT_ITALIC
+        # font = cv2.FONT_HERSHEY_SIMPLEX
+        font = cv2.FONT_HERSHEY_PLAIN
+        # font = cv2.FONT_HERSHEY_DUPLEX
+        # font = cv2.FONT_HERSHEY_COMPLEX
+        # font = cv2.FONT_HERSHEY_COMPLEX_SMALL
+        # font = cv2.FONT_HERSHEY_SCRIPT_SIMPLEX
+        # font = cv2.FONT_HERSHEY_SCRIPT_COMPLEX
+        # font = cv2.FONT_ITALIC
 
-for i in range(len(boxes)):
-    if i in indexes:
-        x, y, w, h = boxes[i]
-        label = str(classes[class_ids[i]])
-        color = colors[i]
-        # 사각형 그리는 함수
-        # img, start, end, color, thickness
-        cv2.rectangle(img, (x, y), (x + w, y + h), color, 2)
-        # image, text, text 시작 위치, font, font size, color, font bold
-        cv2.putText(img, label, (x, y+20), font, 2, color, 2)
+        for i in range(len(boxes)):
+            if i in indexes:
+                x, y, w, h = boxes[i]
+                label = str(classes[class_ids[i]])
+                color = colors[i]
+                # 사각형 그리는 함수
+                # img, start, end, color, thickness
+                cv2.rectangle(img, (x, y), (x + w, y + h), color, 2)
+                # image, text, text 시작 위치, font, font size, color, font bold
+                cv2.putText(img, label, (x, y+20), font, 2, color, 2)
+                # 정확성 출력
+                cfd = "confidence : %d%%"%int(confidences[i] * 100)
+                cv2.putText(img, cfd, (x, y+30), font, 1, color, 2)
+    except:
+        continue
 
-        cfd = "confidence : %d%%"%int(confidences[i] * 100)
-        cv2.putText(img, cfd, (x, y+30), font, 1, color, 2)
-cv2.imshow("Image", img)
+    cv2.imshow("Video", img)
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+
 cv2.waitKey(0)
 cv2.destroyAllWindows()
 
