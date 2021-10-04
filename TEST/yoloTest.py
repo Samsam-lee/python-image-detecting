@@ -19,7 +19,7 @@ while(video.isOpened()):
         # 이미지 가져오기
         # img = cv2.imread("assets/personInRoad.jpg")
         # img = cv2.resize(img, None, fx=0.4, fy=0.4)
-        # img = cv2.resize(img, dsize=(1024,768))
+        # img = cv2.resize(img, dsize=(416,416))
         height, width, channels = img.shape
 
         # Detecting objects
@@ -89,11 +89,18 @@ while(video.isOpened()):
     except:
         continue
 
+    if type(img) == type(None):
+        break
+
     cv2.imshow("Video", img)
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
-cv2.waitKey(0)
+# cv2.waitKey(0)
 cv2.destroyAllWindows()
 
+# 영상의 프레임이 끊기는 이유
+## GPU 로 실행을 해야 조금 더 빠르다고 한다.
+## 텐서 플로우 임포트 하는 것 알아보기
+## 다른 사람들 예제 많이 찾아보기
