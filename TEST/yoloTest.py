@@ -3,6 +3,8 @@ import numpy
 
 # Yolo 로드
 net = cv2.dnn.readNet("yolov3.weights", "yolov3.cfg")
+
+# classes -> 학습된 객체 이름
 classes = []
 with open("coco.names", "r") as f:
     classes = [line.strip() for line in f.readlines()]
@@ -23,7 +25,16 @@ while(video.isOpened()):
         height, width, channels = img.shape
 
         # Detecting objects
+        # cv2.dnn.blobFromImage -> image, scalefactor, size, mean, swapRB, crop, ddepth
+        # scalefactor : 입력 영상 픽셀 값에 곱할 값, 기본 값은 1
+        # size : 출력 영상의 크기, 기본 값은 (0, 0)
+        # mean : 입력 영상 각 채널에서 뺄 평균 값, 기본 값은 (0, 0, 0, 0)
+        # swapRB : R과 B채널을 서로 바꿀 것인지를 결정하는 플래그, 기본 값은 False
+        # crop : crop 수행 여부, 기본 값은 False
+        # ddepth : 출력 블롭의 깊이, CV_32F or CV_8U, 기본 값은 CV_32F
+        # 반환 값 : shape = (N, C, H, W), N은 갯수, C는 채널 갯수, HW는 영상 크기
         blob = cv2.dnn.blobFromImage(img, 0.00392, (416, 416), (0, 0, 0), True, crop=False)
+        # 네트워크 입력 설정
         net.setInput(blob)
         # outs -> 감지 결과
         outs = net.forward(output_layers)
