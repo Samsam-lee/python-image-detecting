@@ -1,6 +1,6 @@
 import csv
 import boto3
-import cv2
+from PIL import Image, ImageDraw
 
 try:
     # aws rekognition 사용
@@ -12,6 +12,9 @@ try:
             secret_access_key = line[3]
 
     photo = 'roadImage.png'
+    img = Image.open(photo)
+    imgWidth, imgHeight = img.size
+    draw = ImageDraw.Draw(img)
 
     client = boto3.client('rekognition',
                             aws_access_key_id = access_key_id,
@@ -21,39 +24,35 @@ try:
         source_bytes = source_image.read()
 
     response = client.detect_labels(Image = {'Bytes': source_bytes},
-                                    MaxLabels=10)
+                                    MaxLabels=10,
+                                    MinConfidence=75)
     print(response)
 
     # 넘어온 response 값 안에서 객체의 위치 값이 넘어 오는 것만 구분
-    for i in range(len(response['Labels'])):
-        if response['Labels'][i]['Instances'] != []:
-            print('Name : ', response['Labels'][i]['Name'])
+    labels = response['Labels']
 
+    for i in range(len(labels)):
+        if labels[i]['Instances'] != []:
+            print('Name : ', labels[i]['Name'])
 
+            for j in range(len(labels[i]['Instances'])):
+                box = labels[i]['Instances'][j]['BoundingBox']
+
+                left = imgWidth * box['Left']
+                top = imgHeight * box['Top']
+                width = imgWidth * box['Width']
+                height = imgHeight * box['Height']
+
+                points = (
+                    (left,top),
+                    (left + width, top),
+                    (left + width, top + height),
+                    (left , top + height),
+                    (left, top)
+                )
+                draw.line(points, fill='#00d400', width=2)
 
 except:
     print('error')
 
-
-
-
-
-
-
-# if response['ResponseMetadata']['HTTPStatusCode'] != 200:
-#     print('bug')
-
-
-# for i in range(len(boxes)):
-#     if i in indexes:
-#         x, y, w, h = boxes[i]
-#         label = str(classes[class_ids[i]])
-#         color = colors[i]
-#         # 사각형 그리는 함수
-#         # img, start, end, color, thickness
-#         cv2.rectangle(img, (x, y), (x + w, y + h), color, 2)
-#         # image, text, text 시작 위치, font, font size, color, font bold
-#         cv2.putText(img, label, (x, y+20), font, 2, color, 2)
-#         # 정확성 출력
-#         cfd = "confidence : %d%%"%int(confidences[i] * 100)
-#         cv2.putText(img, cfd, (x, y+30), font, 1, color, 2)
+img.show()
