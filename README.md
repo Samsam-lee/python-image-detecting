@@ -15,3 +15,19 @@ darknet <br/>
 3. windows terminal 에서 linux 로 바로 열리게 설정
 [https://wslhub.com/wsl-firststep/firststep/winterm/](https://wslhub.com/wsl-firststep/firststep/winterm/)
 4. terminal을 열어도 windows가 아닌 linux 폴더로 열리게 변경
+
+## Darknet Install
+- 출처 : pjreddie.com/darknet/install
+
+```
+git clone https://github.com/pjreddie/darknet.git
+cd darknet
+make
+```
+
+```
+./darknet
+했을 때
+usage: ./darknet <function>
+나오면 정상
+```
