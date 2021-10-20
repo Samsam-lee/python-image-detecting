@@ -27,7 +27,9 @@ make
 
 ```
 ./darknet
-했을 때
-usage: ./darknet <function>
-나오면 정상
 ```
+했을 때
+```
+usage: ./darknet <function>
+```
+나오면 정상
