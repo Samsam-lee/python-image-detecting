@@ -33,3 +33,9 @@ make
 usage: ./darknet <function>
 ```
 나오면 정상
+
+### OpenCV
+- jjeongil.tistory.com/1308
+```
+sudo apt install python3-opencv
+```
