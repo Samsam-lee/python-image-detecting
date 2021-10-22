@@ -8,7 +8,7 @@ cuda (gpu) <br/>
 jetson nano <br/>
 darknet <br/>
 
-<br/>
+
 ## Windows 에서 Linux 설치
 1. windows terminal 설치
 2. wsl 설치
@@ -17,6 +17,7 @@ darknet <br/>
 4. terminal을 열어도 windows가 아닌 linux 폴더로 열리게 변경
 
 <br/>
+
 ## Darknet Install
 - 출처 : pjreddie.com/darknet/install
 ```
@@ -32,6 +33,7 @@ make
 usage: ./darknet <function>
 ```
 나오면 정상
+
 <br/>
 
 ## OpenCV
