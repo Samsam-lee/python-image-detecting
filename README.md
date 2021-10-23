@@ -42,3 +42,8 @@ usage: ./darknet <function>
 sudo apt install python3-opencv
 ```
 <br/>
+
+## 이미지 인식
+```
+./darknet detect cfg/yolov3.cfg yolov3.weights data/dog.jpg
+```
