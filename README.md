@@ -47,3 +47,5 @@ sudo apt install python3-opencv
 ```
 ./darknet detect cfg/yolov3.cfg yolov3.weights data/dog.jpg
 ```
+
+<br/>
