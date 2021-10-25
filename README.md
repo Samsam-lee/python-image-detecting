@@ -36,6 +36,13 @@ usage: ./darknet <function>
 
 <br/>
 
+### Cuda
+
+- docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html
+- developer.nvidia.com/cuda-11.1.0-download-archive?target_os=Linux&target_arch=x86_64&targetdistro=Ubuntu&target_version=1804&target_type=debnetwork
+
+<br/>
+
 ## OpenCV
 - jjeongil.tistory.com/1308
 ```
