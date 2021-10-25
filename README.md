@@ -1,7 +1,8 @@
 # python-image-detecting
 Use OpenCV and practice YOLO, study python and use "AWS rekognition"
 
-# 
+<br/>
+
 ubuntu 18.04 <br/>
 python에서 불러오기 <br/>
 cuda (gpu) <br/>
@@ -37,7 +38,7 @@ usage: ./darknet <function>
 <br/>
 
 ### Cuda
-
+- https://elinux.org/Jetson/Installing_CUDA (쿠다 설치 공식 홈페이지)
 - docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html
 - developer.nvidia.com/cuda-11.1.0-download-archive?target_os=Linux&target_arch=x86_64&targetdistro=Ubuntu&target_version=1804&target_type=debnetwork
 
@@ -53,6 +54,16 @@ sudo apt install python3-opencv
 ## 이미지 인식
 ```
 ./darknet detect cfg/yolov3.cfg yolov3.weights data/dog.jpg
+```
+
+<br/>
+
+## Jetson Nano
+## 해상도 설정
+~/.xsessionrc 파일 수정 (제일 아래 부분에 코드 추가)
+```
+echo "xrandr --fb 1280x720" >> ~/.xsessionrc
+source ~/.xsessionrc
 ```
 
 <br/>
