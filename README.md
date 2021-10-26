@@ -67,3 +67,10 @@ source ~/.xsessionrc
 ```
 
 <br/>
+
+## 팬 설정
+```
+sudo sh -c 'echo 100 > /sys/devices/pwm-fan/target_pwm'
+```
+
+<br/>
